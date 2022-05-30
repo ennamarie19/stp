@@ -84,7 +84,7 @@ bool MinisatCore::solve(bool& timeout_expired) // Search without assumptions.
 
   Minisat::vec<Minisat::Lit> assumps;
   Minisat::lbool ret = s->solveLimited(assumps);
-l  if (ret == (Minisat::lbool)l_Undef)
+  if (ret == (Minisat::lbool)l_Undef)
   {
     timeout_expired = true;
   }
