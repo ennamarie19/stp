@@ -1,0 +1,8 @@
+image: ghcr.io/ennamarie19/stp-fuzz:latest
+project: stp
+target: stp-fuzz
+tests:
+    - file://corpus
+
+cmds:
+    - cmd: /stp @@
