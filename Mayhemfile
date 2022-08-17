@@ -1,8 +1,7 @@
-image: ghcr.io/ennamarie19/stp-fuzz:latest
 project: stp
 target: stp-fuzz
-tests:
+testsuite:
     - file://corpus
 
 cmds:
-    - cmd: /stp @@
+    - cmd: /stp --SMTLIB2 @@
