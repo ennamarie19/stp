@@ -62,7 +62,9 @@ public:
     Flatten,
     NodeDomainAnalysis,
     StrengthReduction,
-    SplitExtracts
+    SplitExtracts,
+    Rewriting,
+    MergeSame
   };
 
   std::vector<std::string> CategoryNames = {"Transforming",
@@ -88,7 +90,10 @@ public:
                                             "Sharing-aware Flattening",
                                             "Node Domain Analysis",
                                             "Strength Reduction",
-                                            "Spliting Extracts"};
+                                            "Spliting Extracts",
+                                            "Sharing-aware rewriting",
+                                            "Merge Same"
+                                          };
 
 
   typedef std::pair<Category, long> Element;

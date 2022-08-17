@@ -34,7 +34,7 @@ namespace stp
  * options.
  ******************************************************************/
 
-struct UserDefinedFlags // not copyable
+struct UserDefinedFlags
 {
   UserDefinedFlags(UserDefinedFlags const&) = delete;
   UserDefinedFlags& operator=(UserDefinedFlags const&) = delete;
@@ -58,13 +58,15 @@ public:
   bool bitConstantProp_flag = true; // Constant bit propagation enabled.
   bool enable_unconstrained = true;
   bool enable_flatten = false;
-  bool enable_ite_context = true;
+  bool enable_ite_context = false;
   bool enable_aig_core_simplify = false;
   bool enable_use_intervals = true;
-  bool enable_pure_literals = true;
+  bool enable_pure_literals = false;
   bool enable_always_true = false;
   bool enable_split_extracts = true;
-  
+  bool enable_sharing_aware_rewriting = true;
+  bool enable_merge_same = true;
+
   int64_t AIG_rewrites_iterations = 0; // Number of iterations of AIG rewrites.
   int64_t bitblast_simplification = 0;
   int64_t size_reducing_fixed_point = 1000000;
@@ -121,7 +123,7 @@ public:
   bool bvplus_variant = true;
   bool conjoin_to_top = true;
 
-  int64_t multiplication_variant = 7;
+  int64_t multiplication_variant = 13;
 
   // If the bit-blaster discovers new constants, should the term simplifier be
   // re-run.
@@ -144,7 +146,6 @@ public:
   bool check_counterexample_flag = false;
   //This is derived from other settings.
   bool construct_counterexample_flag = false;
-
 
 
   // Available back-end SAT solvers.
@@ -177,6 +178,10 @@ public:
     wordlevel_solve_flag = false;
     propagate_equalities = false;
     enable_flatten = false;
+    enable_split_extracts = false;
+    enable_sharing_aware_rewriting = false;
+    enable_merge_same = false;
+    enable_ite_context = false;
 
     bitblast_simplification = 0;
   }
@@ -190,8 +195,6 @@ public:
      array_difficulty_reversion = false;
      difficulty_reversion = false;
   }
-
-
 
   UserDefinedFlags()
   {

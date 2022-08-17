@@ -50,6 +50,8 @@ THE SOFTWARE.
 #include "stp/Simplifier/UseITEContext.h"
 #include "stp/Simplifier/Flatten.h"
 #include "stp/Simplifier/StrengthReduction.h"
+#include "stp/Simplifier/Rewriting.h"
+#include "stp/Simplifier/MergeSame.h"
 #include <memory>
 using std::cout;
 
@@ -194,13 +196,9 @@ ASTNode STP::sizeReducing(ASTNode inputToSat,
 
   if (bm->UserFlags.enable_use_intervals && bm->UserFlags.bitConstantProp_flag)
   {
-    domain->buildMap(inputToSat);
-
     bm->GetRunTimes()->start(RunTimes::StrengthReduction);
     StrengthReduction sr(bm->defaultNodeFactory, &bm->UserFlags);
-    
-    inputToSat = sr.topLevel(inputToSat, *domain->getFixedMap());
-    inputToSat = sr.topLevel(inputToSat, *domain->getCbitMap());
+    inputToSat = sr.topLevel(inputToSat, *domain);
     bm->GetRunTimes()->stop(RunTimes::StrengthReduction);
 
     bm->ASTNodeStats(domain_message.c_str(), inputToSat);
@@ -223,16 +221,31 @@ ASTNode STP::sizeReducing(ASTNode inputToSat,
 
   if (bm->UserFlags.enable_always_true)
   {
-    AlwaysTrue always(simp, bm, bm->defaultNodeFactory);
+    AlwaysTrue always(bm, bm->defaultNodeFactory);
     inputToSat = always.topLevel(inputToSat);
     bm->ASTNodeStats("After removing always true: ", inputToSat);
   }
+
+  if (bm->UserFlags.enable_merge_same)
+  {
+    MergeSame ms(bm, bm->defaultNodeFactory);
+    inputToSat = ms.topLevel(inputToSat);
+    bm->ASTNodeStats("After Merge Same: ", inputToSat);
+  }
+
 
   if (bm->UserFlags.enable_flatten)
   {
     Flatten flatten(bm,bm->defaultNodeFactory);
     inputToSat = flatten.topLevel(inputToSat);
     bm->ASTNodeStats("After Sharing-aware Flattening: ", inputToSat);
+  }
+
+  if (bm->UserFlags.enable_sharing_aware_rewriting)
+  {
+    Rewriting rewrite(bm,bm->defaultNodeFactory);
+    inputToSat = rewrite.topLevel(inputToSat);
+    bm->ASTNodeStats("After Sharing-aware rewriting: ", inputToSat);
   }
 
   // I suspect this could increase the size.
@@ -485,17 +498,15 @@ STP::TopLevelSTPAux(SATSolver& NewSolver, const ASTNode& original_input)
 
   if (bm->UserFlags.enable_use_intervals && bm->UserFlags.bitConstantProp_flag)
   {
-    domain->buildMap(inputToSat);
-
     bm->GetRunTimes()->start(RunTimes::StrengthReduction);
     StrengthReduction sr(bm->defaultNodeFactory, &bm->UserFlags);
-    
-    inputToSat = sr.topLevel(inputToSat, *domain->getFixedMap());
-    inputToSat = sr.topLevel(inputToSat, *domain->getCbitMap());
+    inputToSat = sr.topLevel(inputToSat, *domain);
     bm->GetRunTimes()->stop(RunTimes::StrengthReduction);
 
     bm->ASTNodeStats(domain_message.c_str(), inputToSat);
   }
+
+  domain.reset(nullptr);
 
   if (bm->UserFlags.enable_pure_literals)
   {
@@ -524,6 +535,9 @@ STP::TopLevelSTPAux(SATSolver& NewSolver, const ASTNode& original_input)
     inputToSat = aigRR.topLevel(inputToSat);
     bm->ASTNodeStats("After AIG Core: ", inputToSat);
   }
+
+  if (simp->hasUnappliedSubstitutions())
+    inputToSat = simp->applySubstitutionMap(inputToSat);
 
   if (bm->UserFlags.enable_unconstrained)
   {

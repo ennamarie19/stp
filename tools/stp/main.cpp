@@ -171,6 +171,10 @@ void ExtraMain::create_options()
       BOOL_ARG(bm->UserFlags.enable_flatten),
       "Enable sharing-aware flattening of >2 arity nodes")
 
+      ("rewriting", 
+      BOOL_ARG(bm->UserFlags.enable_sharing_aware_rewriting),
+      "Enable sharing-aware rewriting")
+
       ("split-extracts",
       BOOL_ARG(bm->UserFlags.enable_split_extracts),
       "Create new variables for some extracts")
@@ -194,6 +198,11 @@ void ExtraMain::create_options()
       ("always-true", 
       BOOL_ARG(bm->UserFlags.enable_always_true),
       "Nodes that are always true (e.g. asserted) are replaced through out the problem by true")
+
+      ("merge-same", 
+      BOOL_ARG(bm->UserFlags.enable_merge_same),
+      "Uses simple boolean algebra rules to combine conjuncts at the top level")
+
   
       ("bit-blast-simplification", 
       INT64_ARG(bm->UserFlags.bitblast_simplification),
@@ -268,7 +277,7 @@ void ExtraMain::create_options()
       po::bool_switch(&(bm->UserFlags.print_STPinput_back_dot_flag)),
       "print dotty/neato's graph format, then exit")(
       "print-counterex,p",
-      po::bool_switch(&(bm->UserFlags.print_counterexample_flag)),
+      po::bool_switch(&(bm->UserFlags.print_counterexample_flag)), 
       "print counterexample")(
       "print-counterexbin,y",
       po::bool_switch(&(bm->UserFlags.print_binary_flag)),
@@ -352,7 +361,7 @@ void ExtraMain::create_options()
       "Number of conflicts after which the SAT solver gives up. "
       "-1 means never")
 
-      ("max-time,max_time,g", 
+      ("max-time,max_time,k", 
       INT64_ARG(bm->UserFlags.timeout_max_time),
       "Number of seconds after which the SAT solver gives up. "
       "-1 means never.")
@@ -360,6 +369,7 @@ void ExtraMain::create_options()
       ("check-sanity,d", 
         po::bool_switch(&(bm->UserFlags.check_counterexample_flag)),
         "construct counterexample and check it");
+
 
 #undef BOOL_ARG
 #undef INT64_ARG
