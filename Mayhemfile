@@ -4,4 +4,4 @@ testsuite:
     - file://corpus
 
 cmds:
-    - cmd: /stp @@
+    - cmd: /stp --SMTLIB2 @@
