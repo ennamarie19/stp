@@ -58,4 +58,4 @@ RUN cmake .. \
 # Set up to run in a minimal container
 FROM scratch
 COPY --from=builder /usr/local/bin/stp /stp
-ENTRYPOINT ["/stp", "--SMTLIB2"]
+CMD ["/stp", "--SMTLIB2"]
