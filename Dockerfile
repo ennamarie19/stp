@@ -60,4 +60,4 @@ FROM scratch as mayhem-package
 COPY --from=builder /usr/local/bin/stp /stp
 
 FROM mayhem-package
-CMD ["/stp", "--SMTLIB2"]
+ENTRYPOINT ["/stp", "--SMTLIB2"]
