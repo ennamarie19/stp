@@ -5,5 +5,5 @@ testsuite:
 
 cmds:
     - cmd: /stp --SMTLIB2 @@
-    env:
+      env:
         MFUZZ_DOCKER_ENTRYPOINT: 0
