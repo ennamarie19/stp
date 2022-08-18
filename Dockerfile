@@ -56,6 +56,8 @@ RUN cmake .. \
  && cmake --install .
 
 # Set up to run in a minimal container
-FROM scratch
+FROM scratch as mayhem-package
 COPY --from=builder /usr/local/bin/stp /stp
+
+FROM mayhem-package
 CMD ["/stp", "--SMTLIB2"]
