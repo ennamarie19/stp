@@ -56,8 +56,9 @@ RUN cmake .. \
  && cmake --install .
 
 # Set up to run in a minimal container
-FROM scratch as mayhem-package
+FROM ubuntu:22.04 as mayhem-package
 COPY --from=builder /usr/local/bin/stp /stp
 
-FROM mayhem-package
+FROM scratch
+COPY --from=builder /usr/local/bin/stp /stp
 ENTRYPOINT ["/stp", "--SMTLIB2"]
